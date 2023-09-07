@@ -1,54 +1,25 @@
 import os
-import time
+import asyncio
 
 from flask import Flask,request,render_template,make_response,jsonify
 from apscheduler.schedulers.background import BackgroundScheduler
-from mysql.connector import  Error
 from flask_cors import CORS
-import datetime
 from src.database.connect import get_db_connection
+from src.tasks.notifications import notifications
 
-import uuid
 
 template_dir = os.path.abspath('templates')
 app = Flask(__name__, template_folder=template_dir)
 CORS(app, resources={r'/*': {'origins': '*'}})
-def cron_job():
-    print("INICIANDO O JOB")
-    agora = datetime.datetime.now().strftime("%H:%M")
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor()
-        cursor.callproc('PROCEDURE_VERIFY_TASKS',['00:00'])
-        NOTIFICATION = []
-        for result in cursor.stored_results():
-
-            print(result.fetchall())
-
-        for (r,i) in result.fetchall():
-            sql = f"INSERT INTO notifications (code_uuid,task_id,contributor_id) VALUES('{str(uuid.uuid4())}','{r[0]}','{r[1]}')"
-            cursor.execute(sql)
-            connection.commit()
-            print(i)
-            print(r)
-                
-    except Error as e:
-        print(e)
-
-    finally:
-        cursor.close()
-        connection.close()
-print("FIM DO JOB")
-
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(cron_job,'interval',seconds=5)
+sched.add_job(notifications,'interval',seconds=10)
 sched._job_defaults["misfire_grace_time"] = 30
 sched.start()
 
 
 @app.route("/")
-def hello():
+def home():
      return render_template('index.html')
 
 @app.route("/templates/equipes",methods=['GET','POST'])
