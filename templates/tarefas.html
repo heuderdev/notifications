@@ -1,0 +1,101 @@
+{% extends 'base.html' %} {% block content %}
+<h1 class="mb-5 mt-4">Gerenciamento das tarefas</h1>
+<div class="card">
+  <div class="card-body">
+    <form>
+      <div class="mb-3">
+        <label id="basic-addon1">Nome</label>
+        <input
+          name="name"
+          type="text"
+          class="form-control"
+          placeholder="registre sua tarefa."
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label>Descrição</label>
+        <textarea
+          name="description"
+          class="form-control"
+          placeholder="opcional"
+          aria-label="With textarea"
+        ></textarea>
+      </div>
+      <div class="mt-5">
+        <button type="submit" class="btn btn-primary">cadastrar</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!--  -->
+<div class="card mt-5 mb-5">
+  <div class="card-body">
+    <h4>Tarefas cadastrados</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Horário</th>
+          <th scope="col">Descrição</th>
+          <th scope="col">Ativado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%for item in tasks%}
+        <tr>
+          <th scope="row">{{item.id}}</th>
+          <td>{{item.name}}</td>
+          <td>{{item.description}}</td>
+          {% if item.is_active ==1 %}
+          <td class="">
+            <span class="badge rounded-pill bg-success">SIM</span>
+          </td>
+          {% else %}
+          <td class="">
+            <span class="badge rounded-pill bg-danger">NÃO</span>
+          </td>
+          {% endif %}
+        </tr>
+        {%endfor%}
+      </tbody>
+    </table>
+  </div>
+</div>
+<!--  -->
+{% endblock %} {% block script %}
+
+<script>
+  $(document).ready(function () {
+    $("form").on("submit", function (e) {
+      e.preventDefault();
+      var name = $("input[name=name]").val();
+      var description = $("textarea[name=description]").val();
+      axios
+        .post(window.base_url + "/templates/tarefas", {
+          name: name,
+          description: description,
+        })
+        .then(function (response) {
+          Toastify({
+            text: "ADICIONADO COM SUCESSO.",
+            className: "info",
+            style: {
+              background: "linear-gradient(to right, #00b09b, #96c93d)",
+            },
+          }).showToast();
+        })
+        .cath((e) => {
+          Toastify({
+            text: "ERRO: " + e,
+            className: "error",
+            style: {
+              background: "linear-gradient(to right, red, red)",
+            },
+          }).showToast();
+        });
+    });
+  });
+</script>
+
+{% endblock %}

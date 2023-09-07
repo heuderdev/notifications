@@ -1,0 +1,71 @@
+{% extends 'base.html' %} {% block content %}
+<h1 class="mb-5 mt-4">Vincular tarefas aos horários</h1>
+
+<form>
+  <div class="mb-3">
+    <label class="form-label">Selecione uma tarefa</label>
+    <select
+      name="task_id"
+      class="form-select form-select-sm"
+      aria-label=".form-select-sm example"
+    >
+      {%for item in tasks%}
+      <option value="{{item.id}}">{{item.name}}</option>
+      {%endfor%}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Selecione um horário</label>
+    <select
+      name="schedule_id"
+      class="form-select form-select-sm"
+      aria-label=".form-select-sm example"
+    >
+      {%for item in schedules%}
+      <option value="{{item.id}}">{{item.time}}</option>
+      {%endfor%}
+    </select>
+  </div>
+  <div class="mb-3">
+    <button type="submit" class="btn btn-primary">cadastrar</button>
+  </div>
+</form>
+{% endblock %}
+<!--  -->
+{% block script %}
+<script>
+  $(document).ready(function () {
+    $("form").on("submit", function (e) {
+      e.preventDefault();
+      var task_id = $("select[name=task_id]").val();
+      var schedule_id = $("select[name=schedule_id]").val();
+      console.log(task_id, schedule_id);
+      axios
+        .post(window.base_url + "/templates/tarefas_schedules", {
+          task_id: task_id,
+          schedule_id: schedule_id,
+        })
+        .then(function (response) {
+          Toastify({
+            text: "ADICIONADO COM SUCESSO.",
+            className: "info",
+            style: {
+              background: "linear-gradient(to right, #00b09b, #96c93d)",
+            },
+          }).showToast();
+        })
+        .catch((e) => {
+          console.log(e);
+          Toastify({
+            text: "ERRO: " + e,
+            className: "error",
+            style: {
+              background: "linear-gradient(to right, red, red)",
+            },
+          }).showToast();
+        });
+    });
+  });
+</script>
+
+{% endblock %}
