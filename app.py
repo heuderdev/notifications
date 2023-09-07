@@ -13,8 +13,8 @@ app = Flask(__name__, template_folder=template_dir)
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(notifications,'interval',seconds=10)
-sched._job_defaults["misfire_grace_time"] = 30
+sched.add_job(notifications,'interval',seconds=30)
+sched.job_defaults["misfire_grace_time"] = 30
 sched.start()
 
 
