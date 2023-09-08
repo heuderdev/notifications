@@ -14,7 +14,6 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 
 sched = BackgroundScheduler(daemon=True)
 sched.add_job(notifications,'interval',seconds=30)
-sched.job_defaults["misfire_grace_time"] = 30
 sched.start()
 
 
